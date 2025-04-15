@@ -1,11 +1,26 @@
-"use client"
+"use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
-import { CheckCircle, XCircle, Clock, MoreHorizontal, Phone, Mail, Calendar } from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  MoreHorizontal,
+  Phone,
+  Mail,
+  Calendar,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +28,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 // Sample data for technicians
 const techniciansData = [
@@ -77,51 +92,65 @@ const techniciansData = [
     completedToday: 0,
     avatar: null,
   },
-]
+];
 
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {
   switch (status) {
     case "available":
       return (
-        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+        <Badge
+          variant="outline"
+          className="bg-green-50 text-green-700 border-green-200"
+        >
           <CheckCircle className="mr-1 h-3 w-3" /> Disponible
         </Badge>
-      )
+      );
     case "busy":
       return (
-        <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+        <Badge
+          variant="outline"
+          className="bg-yellow-50 text-yellow-700 border-yellow-200"
+        >
           <Clock className="mr-1 h-3 w-3" /> Ocupado
         </Badge>
-      )
+      );
     case "unavailable":
       return (
-        <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+        <Badge
+          variant="outline"
+          className="bg-gray-50 text-gray-700 border-gray-200"
+        >
           <XCircle className="mr-1 h-3 w-3" /> No disponible
         </Badge>
-      )
+      );
     default:
-      return null
+      return null;
   }
-}
+};
 
 // Workload component
 const Workload = ({ value }: { value: number }) => {
-  let color = "bg-green-500"
+  let indicatorColor = "bg-green-500";
 
   if (value > 70) {
-    color = "bg-red-500"
+    indicatorColor = "bg-red-500";
   } else if (value > 40) {
-    color = "bg-yellow-500"
+    indicatorColor = "bg-yellow-500";
   }
 
   return (
     <div className="flex items-center gap-2">
-      <Progress value={value} className="h-2" indicatorClassName={color} />
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-200">
+        <div
+          className={`h-full w-full flex-1 transition-all ${indicatorColor}`}
+          style={{ transform: `translateX(-${100 - value}%)` }}
+        />
+      </div>
       <span className="text-xs font-medium">{value}%</span>
     </div>
-  )
-}
+  );
+};
 
 export function AdminTechnicians() {
   return (
@@ -144,7 +173,10 @@ export function AdminTechnicians() {
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8 border border-gray-200">
                     <AvatarImage
-                      src={technician.avatar || "/placeholder.svg?height=32&width=32"}
+                      src={
+                        technician.avatar ||
+                        "/placeholder.svg?height=32&width=32"
+                      }
                       alt={technician.name}
                     />
                     <AvatarFallback className="bg-red-50 text-red-700 text-xs">
@@ -156,7 +188,9 @@ export function AdminTechnicians() {
                   </Avatar>
                   <div>
                     <div className="font-medium">{technician.name}</div>
-                    <div className="text-xs text-muted-foreground">{technician.department}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {technician.department}
+                    </div>
                   </div>
                 </div>
               </TableCell>
@@ -166,8 +200,12 @@ export function AdminTechnicians() {
               <TableCell>
                 <Workload value={technician.workload} />
               </TableCell>
-              <TableCell className="text-center">{technician.assignedTickets}</TableCell>
-              <TableCell className="text-center">{technician.completedToday}</TableCell>
+              <TableCell className="text-center">
+                {technician.assignedTickets}
+              </TableCell>
+              <TableCell className="text-center">
+                {technician.completedToday}
+              </TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -199,5 +237,5 @@ export function AdminTechnicians() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

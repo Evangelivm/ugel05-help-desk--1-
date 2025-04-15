@@ -14,6 +14,25 @@ interface SupportType {
   label: string;
 }
 
+interface TicketMetricsResponse {
+  ticketsByStatus: {
+    abiertos: number;
+    enProceso: number;
+    pendientes: number;
+    resueltos: number;
+  };
+  tiempoPromedio: {
+    current: number;
+    difference: number;
+    percentage: number;
+    isImprovement: boolean;
+  };
+  totals: {
+    currentMonth: number;
+    previousMonth: number;
+  };
+}
+
 // Función para obtener los tipos de soporte disponibles
 export const getSupportTypes = async (): Promise<SupportType[]> => {
   try {
@@ -82,5 +101,73 @@ export const getTicketDetails = async (ticketId: string) => {
   } catch (error) {
     console.error("Error al obtener los detalles del ticket:", error);
     throw error;
+  }
+};
+
+// Función para eliminar un ticket basado en el código_consulta
+export const deleteTicket = async (codigoConsulta: string) => {
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/tickets/${codigoConsulta}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al eliminar el ticket:", error);
+
+    if (axios.isAxiosError(error)) {
+      console.error("Status:", error.response?.status);
+      console.error("Mensaje:", error.response?.data);
+
+      if (error.response?.status === 404) {
+        throw new Error("Ticket no encontrado");
+      } else if (error.response?.status === 403) {
+        throw new Error("No tienes permisos para eliminar este ticket");
+      }
+    }
+
+    throw error;
+  }
+};
+
+// Función para obtener métricas de tickets del usuario
+export const getTicketMetrics = async (
+  userId: string
+): Promise<TicketMetricsResponse> => {
+  try {
+    const response = await axios.get(`${BASE_URL}/tickets/metrics/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener métricas de tickets:", error);
+
+    if (axios.isAxiosError(error)) {
+      console.error("Status:", error.response?.status);
+      console.error("Mensaje:", error.response?.data);
+
+      if (error.response?.status === 404) {
+        throw new Error("Usuario no encontrado");
+      } else if (error.response?.status === 400) {
+        throw new Error("Datos inválidos para la consulta");
+      }
+    }
+
+    // Retorno de valores por defecto en caso de error
+    return {
+      ticketsByStatus: {
+        abiertos: 0,
+        enProceso: 0,
+        pendientes: 0,
+        resueltos: 0,
+      },
+      tiempoPromedio: {
+        current: 0,
+        difference: 0,
+        percentage: 0,
+        isImprovement: false,
+      },
+      totals: {
+        currentMonth: 0,
+        previousMonth: 0,
+      },
+    };
   }
 };

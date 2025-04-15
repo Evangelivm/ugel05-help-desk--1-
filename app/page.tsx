@@ -1,24 +1,27 @@
+// app/page.tsx
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { HelpDeskLayout } from "@/components/help-desk-layout";
-import { MyRequests } from "@/components/my-requests";
-import { DashboardStats } from "@/components/dashboard-stats";
+import { DashboardContainer } from "@/components/dashboard-container";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
 
-  // Si no hay sesión, redirigir a /login
   if (!session) {
     redirect("/login");
   }
 
+  if (session.user.id_rol === 2) {
+    redirect("/tecnico");
+  }
+  if (session.user.id_rol === 3) {
+    redirect("/admin");
+  }
+
   return (
     <HelpDeskLayout>
-      <div className="space-y-6">
-        <DashboardStats />
-        <MyRequests />
-      </div>
+      <DashboardContainer />
     </HelpDeskLayout>
   );
 }

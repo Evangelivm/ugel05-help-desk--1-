@@ -49,7 +49,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { getTicketHistory } from "@/lib/connections";
+import { getTicketHistory, deleteTicket } from "@/lib/connections";
+import { useToast } from "@/components/ui/use-toast";
 
 // Mapeo de estados numéricos a texto y colores
 const statusMap = {
@@ -104,13 +105,14 @@ const StatusBadge = ({ status }: { status: number }) => {
   );
 };
 
-export function MyRequests() {
+export function MyRequests({ onTicketUpdate }: { onTicketUpdate: () => void }) {
   const { data: session } = useSession();
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchTicketHistory = async () => {
@@ -129,6 +131,36 @@ export function MyRequests() {
 
     fetchTicketHistory();
   }, [session?.user?.alf_num]);
+
+  // Función para cancelar un ticket
+  const handleCancelTicket = async (ticketId: string) => {
+    try {
+      await deleteTicket(ticketId);
+
+      // Actualizar el estado local eliminando el ticket cancelado
+      setRequests((prevRequests) =>
+        prevRequests.filter((request) => request.id !== ticketId)
+      );
+      // Llamar a la función de actualización
+      onTicketUpdate();
+
+      toast({
+        title: "Solicitud cancelada",
+        description: "El ticket ha sido cancelado exitosamente.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error al cancelar el ticket:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "No se pudo cancelar el ticket",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Filter requests based on status and search term
   const filteredRequests = requests.filter((request) => {
@@ -243,7 +275,7 @@ export function MyRequests() {
                       <StatusBadge status={request.status} />
                     </TableCell>
                     <TableCell>{formatDate(request.fecha)}</TableCell>
-                    <TableCell>{request.technician || "-"}</TableCell>
+                    <TableCell>{request.technician || "Sin Asignar"}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -265,8 +297,11 @@ export function MyRequests() {
                             <MessageSquare className="mr-2 h-4 w-4" />
                             <span>Enviar mensaje</span>
                           </DropdownMenuItem> */}
-                          {[1, 3].includes(request.status) && ( // Abierto o Pendiente
-                            <DropdownMenuItem>
+                          {[1, 2].includes(request.status) && ( // Abierto o Pendiente
+                            <DropdownMenuItem
+                              onClick={() => handleCancelTicket(request.id)}
+                              className="text-red-600 focus:text-red-600"
+                            >
                               <XCircle className="mr-2 h-4 w-4" />
                               <span>Cancelar solicitud</span>
                             </DropdownMenuItem>

@@ -24,10 +24,10 @@ export default function AdminRequestsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 gap-1">
+            {/* <Button variant="outline" size="sm" className="h-8 gap-1">
               <Download className="h-3.5 w-3.5" />
               <span>Exportar</span>
-            </Button>
+            </Button> */}
             <Button className="bg-red-600 hover:bg-red-700 text-white h-8 gap-1">
               <Plus className="h-3.5 w-3.5" />
               <span>Nueva solicitud</span>

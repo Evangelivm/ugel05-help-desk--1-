@@ -39,14 +39,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const isMobile = useMobile();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -83,7 +83,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       icon: Settings,
       current: pathname === "/admin/configuracion",
     },
-    { name: "Cerrar sesión", href: "/logout", icon: LogOut, current: false },
+    {
+      name: "Cerrar sesión",
+      href: "#",
+      icon: LogOut,
+      current: false,
+      onClick: () => signOut({ callbackUrl: "/login" }), // Cierra sesión y redirige a /login
+    },
   ];
 
   // Determine current page title for breadcrumb
@@ -102,22 +108,38 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               alt="Avatar"
             />
             <AvatarFallback className="bg-gradient-to-br from-red-50 to-red-100 text-red-700 text-xl font-semibold">
-              AA
+              {session?.user?.user?.slice(0, 2).toUpperCase() || "AA"}
             </AvatarFallback>
           </Avatar>
           <div className="absolute -bottom-1 -right-1 rounded-full bg-green-500 p-1.5 ring-2 ring-white" />
         </div>
         <div className="mt-4 text-center">
-          <h2 className="text-lg font-semibold text-gray-900">ASTO ASTO</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {session?.user?.user_firstname || "Usuario"}{" "}
+            {session?.user?.user_lastname || "Usuario"}
+          </h2>
           <div className="mt-1 flex items-center justify-center gap-1.5">
             <Badge
               variant="outline"
               className="bg-red-50 text-red-700 border-red-200 text-xs font-normal"
             >
-              Administrador
+              {(() => {
+                switch (session?.user?.id_rol) {
+                  case 1:
+                    return "Usuario";
+                  case 2:
+                    return "Técnico";
+                  case 3:
+                    return "Administrador";
+                  default:
+                    return "N/A";
+                }
+              })()}
             </Badge>
           </div>
-          <p className="mt-1.5 text-sm text-gray-500">JASTO@ugel05.gob.pe</p>
+          <p className="mt-1.5 text-sm text-gray-500">
+            {session?.user?.email || "correo@ugel05.gob.pe"}
+          </p>
           <p className="text-xs text-gray-400">ARH/EEL</p>
         </div>
       </div>
@@ -126,6 +148,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <Link
             key={item.name}
             href={item.href}
+            onClick={item.onClick}
             className={cn(
               "group flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium transition-all",
               item.current
