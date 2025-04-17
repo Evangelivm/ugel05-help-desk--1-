@@ -33,6 +33,17 @@ interface TicketMetricsResponse {
   };
 }
 
+interface MySQLUserData {
+  alf_num: string;
+  nombres: string; // Cambiado de user_firstname a nombres
+  apellidos: string; // Cambiado de user_lastname a apellidos
+  email: string;
+  id_rol: number;
+  dni: string;
+  celular: string; // Cambiado de telefono a celular
+  activo: boolean; // Nuevo campo
+}
+
 // Función para obtener los tipos de soporte disponibles
 export const getSupportTypes = async (): Promise<SupportType[]> => {
   try {
@@ -169,5 +180,39 @@ export const getTicketMetrics = async (
         previousMonth: 0,
       },
     };
+  }
+};
+
+// Función para enviar datos del usuario a MySQL
+export const sendUserToMySQL = async (userData: MySQLUserData) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/admin/create-user`,
+      userData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Usuario enviado a MySQL:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error al enviar el usuario a MySQL:", error);
+
+    if (axios.isAxiosError(error)) {
+      console.error("Status:", error.response?.status);
+      console.error("Mensaje:", error.response?.data);
+
+      // Puedes personalizar el mensaje de error según la respuesta del servidor
+      if (error.response?.status === 400) {
+        throw new Error("Datos inválidos: " + error.response.data.message);
+      } else if (error.response?.status === 500) {
+        throw new Error("Error interno del servidor en MySQL");
+      }
+    }
+
+    throw error;
   }
 };

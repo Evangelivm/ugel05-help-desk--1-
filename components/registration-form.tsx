@@ -46,6 +46,12 @@ const formSchema = z
         message:
           "Debe utilizar un correo electrónico institucional (@ugel05.gob.pe)",
       }),
+    dni: z.string().regex(/^\d{8}$/, {
+      message: "El DNI debe tener exactamente 8 dígitossss",
+    }),
+    telefono: z.string().regex(/^\d{9}$/, {
+      message: "El número de teléfono debe tener exactamente 9 dígitos",
+    }),
     password: z
       .string()
       .min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
@@ -92,6 +98,8 @@ export function RegistrationForm() {
       password: "",
       confirmPassword: "",
       id_rol: 0,
+      dni: "", // Valor inicial para dni
+      telefono: "", // Valor inicial para telefono
     },
   });
 
@@ -119,6 +127,8 @@ export function RegistrationForm() {
         email: values.email,
         password: values.password,
         id_rol: values.id_rol,
+        telefono: values.telefono,
+        dni: values.dni,
       });
 
       if (response.status === 201) {
@@ -261,6 +271,45 @@ export function RegistrationForm() {
           />
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <FormField
+            control={form.control}
+            name="dni"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>DNI</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="12345678"
+                    type="text"
+                    maxLength={8}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="telefono"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Teléfono</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="987654321"
+                    type="text"
+                    maxLength={9}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="id_rol"
@@ -288,7 +337,6 @@ export function RegistrationForm() {
             </FormItem>
           )}
         />
-
         <Button
           type="submit"
           className="w-full bg-red-600 hover:bg-red-700 text-white h-10"

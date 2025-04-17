@@ -2,88 +2,75 @@ import { NextResponse } from "next/server";
 import User from "@/app/models/user";
 import bcrypt from "bcrypt";
 import { connectDB } from "../../lib/db";
+import { sendUserToMySQL } from "@/lib/connections";
 
 export async function POST(request: Request) {
   try {
-    const {
-      user,
-      alf_num,
-      user_firstname,
-      user_lastname,
-      email,
-      password,
-      id_rol,
-    } = await request.json();
+    // 1. Mostrar datos recibidos
+    const requestData = await request.json();
+    // console.log("Datos recibidos:", {
+    //   ...requestData,
+    //   password: "******", // Ocultamos la contraseña por seguridad en los logs
+    // });
 
-    // Validaciones
-    if (!password || password.length < 8) {
+    // 2. Convertir id_rol a número si es string
+    if (typeof requestData.id_rol === "string") {
+      requestData.id_rol = parseInt(requestData.id_rol);
+    }
+
+    // 3. Validación básica
+    if (!requestData.password || requestData.password.length < 6) {
       return NextResponse.json(
-        { message: "La contraseña debe tener al menos 8 caracteres" },
+        { message: "La contraseña debe tener al menos 6 caracteres" },
         { status: 400 }
       );
     }
 
-    if (!email.endsWith("@ugel05.gob.pe")) {
-      return NextResponse.json(
-        { message: "Debe usar un correo electrónico de UGEL05" },
-        { status: 400 }
-      );
-    }
-
+    // 4. Conexión a DB
     await connectDB();
+    console.log("MongoDB conectado");
 
-    // Verificar si el usuario ya existe
-    const userFound = await User.findOne({
-      $or: [{ email }, { user }, { alf_num }],
-    });
-
-    if (userFound) {
-      const field =
-        userFound.email === email
-          ? "correo electrónico"
-          : userFound.user === user
-          ? "nombre de usuario"
-          : "código alfanumérico";
-
+    // 5. Verificar duplicados
+    const userFoundByEmail = await User.findOne({ email: requestData.email });
+    if (userFoundByEmail) {
       return NextResponse.json(
-        { message: `El ${field} ya está registrado` },
+        { message: "El correo electrónico ya está registrado" },
         { status: 409 }
       );
     }
 
-    // Crear nuevo usuario
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const userFoundByUsername = await User.findOne({ user: requestData.user });
+    if (userFoundByUsername) {
+      return NextResponse.json(
+        { message: "El nombre de usuario ya existe" },
+        { status: 409 }
+      );
+    }
+
+    // 6. Hash de contraseña
+    const hashedPassword = await bcrypt.hash(requestData.password, 15);
+
+    // 7. Crear usuario
     const newUser = new User({
-      user,
-      alf_num,
-      user_firstname,
-      user_lastname,
-      email,
+      ...requestData,
       password: hashedPassword,
-      id_rol,
+      id_rol: Number(requestData.id_rol), // Aseguramos que sea número
     });
 
+    // 8. Guardar usuario
     const savedUser = await newUser.save();
+    console.log("Usuario creado");
+    // console.log("Usuario creado:", {
+    //   ...savedUser.toObject(),
+    //   password: "******",
+    // });
 
-    // Eliminar password del objeto de respuesta
-    const userResponse = savedUser.toObject();
-    delete userResponse.password;
-
-    return NextResponse.json(
-      {
-        message: "Usuario creado exitosamente",
-        user: userResponse,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json(savedUser);
   } catch (error) {
-    console.error("Error en registro:", error);
+    console.error("Error completo:", error);
     return NextResponse.json(
-      {
-        message:
-          error instanceof Error ? error.message : "Error interno del servidor",
-      },
-      { status: 500 }
+      { message: error instanceof Error ? error.message : "Error desconocido" },
+      { status: 400 }
     );
   }
 }
