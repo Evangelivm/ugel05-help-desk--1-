@@ -63,18 +63,18 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
       icon: Wrench,
       current: pathname === "/solicitar-soporte",
     },
-    {
-      name: "Guías de soporte",
-      href: "/guias",
-      icon: HelpCircle,
-      current: pathname === "/guias",
-    },
-    {
-      name: "Configuración",
-      href: "/configuracion",
-      icon: Settings,
-      current: pathname === "/configuracion",
-    },
+    // {
+    //   name: "Guías de soporte",
+    //   href: "/guias",
+    //   icon: HelpCircle,
+    //   current: pathname === "/guias",
+    // },
+    // {
+    //   name: "Configuración",
+    //   href: "/configuracion",
+    //   icon: Settings,
+    //   current: pathname === "/configuracion",
+    // },
     {
       name: "Cerrar sesión",
       href: "#",

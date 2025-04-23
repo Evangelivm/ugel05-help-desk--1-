@@ -139,10 +139,10 @@ export default function AdminUsersPage() {
               <Download className="h-3.5 w-3.5" />
               <span>Exportar</span>
             </Button> */}
-            <Button className="bg-red-600 hover:bg-red-700 text-white h-8 gap-1">
+            {/* <Button className="bg-red-600 hover:bg-red-700 text-white h-8 gap-1">
               <Plus className="h-3.5 w-3.5" />
               <span>Nuevo usuario</span>
-            </Button>
+            </Button> */}
           </div>
         </div>
 

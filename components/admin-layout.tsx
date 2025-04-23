@@ -65,24 +65,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       badge: "12",
       current: pathname === "/admin/solicitudes",
     },
-    {
-      name: "Gestión de usuarios",
-      href: "/admin/usuarios",
-      icon: Users,
-      current: pathname === "/admin/usuarios",
-    },
-    {
-      name: "Técnicos",
-      href: "/admin/tecnicos",
-      icon: Wrench,
-      current: pathname === "/admin/tecnicos",
-    },
-    {
-      name: "Configuración",
-      href: "/admin/configuracion",
-      icon: Settings,
-      current: pathname === "/admin/configuracion",
-    },
+    // {
+    //   name: "Gestión de usuarios",
+    //   href: "/admin/usuarios",
+    //   icon: Users,
+    //   current: pathname === "/admin/usuarios",
+    // },
+    // {
+    //   name: "Técnicos",
+    //   href: "/admin/tecnicos",
+    //   icon: Wrench,
+    //   current: pathname === "/admin/tecnicos",
+    // },
+    // {
+    //   name: "Configuración",
+    //   href: "/admin/configuracion",
+    //   icon: Settings,
+    //   current: pathname === "/admin/configuracion",
+    // },
     {
       name: "Cerrar sesión",
       href: "#",

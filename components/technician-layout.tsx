@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/breadcrumb";
+import { cn } from "@/lib/utils";
 import {
   Menu,
   FileText,
@@ -28,9 +28,9 @@ import {
   Calendar,
   HelpCircle,
   Wrench,
-} from "lucide-react"
-import { useMobile } from "@/hooks/use-mobile"
-import { Badge } from "@/components/ui/badge"
+} from "lucide-react";
+import { useMobile } from "@/hooks/use-mobile";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,19 +39,26 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { signOut, useSession } from "next-auth/react";
 
 interface TechnicianLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function TechnicianLayout({ children }: TechnicianLayoutProps) {
-  const isMobile = useMobile()
-  const [open, setOpen] = useState(false)
-  const pathname = usePathname()
+  const { data: session } = useSession();
+  const isMobile = useMobile();
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   const navigation = [
-    { name: "Panel de control", href: "/tecnico", icon: Home, current: pathname === "/tecnico" },
+    {
+      name: "Panel de control",
+      href: "/tecnico",
+      icon: Home,
+      current: pathname === "/tecnico",
+    },
     {
       name: "Mis asignaciones",
       href: "/tecnico/asignaciones",
@@ -59,56 +66,84 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
       badge: "4",
       current: pathname === "/tecnico/asignaciones",
     },
+    // {
+    //   name: "Resueltos hoy",
+    //   href: "/tecnico/resueltos",
+    //   icon: CheckCircle,
+    //   current: pathname === "/tecnico/resueltos",
+    // },
+    // {
+    //   name: "Pendientes",
+    //   href: "/tecnico/pendientes",
+    //   icon: Clock,
+    //   badge: "2",
+    //   current: pathname === "/tecnico/pendientes",
+    // },
+    // { name: "Mi horario", href: "/tecnico/horario", icon: Calendar, current: pathname === "/tecnico/horario" },
+    // { name: "Guías técnicas", href: "/tecnico/guias", icon: HelpCircle, current: pathname === "/tecnico/guias" },
+    // {
+    //   name: "Configuración",
+    //   href: "/tecnico/configuracion",
+    //   icon: Settings,
+    //   current: pathname === "/tecnico/configuracion",
+    // },
     {
-      name: "Resueltos hoy",
-      href: "/tecnico/resueltos",
-      icon: CheckCircle,
-      current: pathname === "/tecnico/resueltos",
+      name: "Cerrar sesión",
+      href: "#",
+      icon: LogOut,
+      current: false,
+      onClick: () => signOut({ callbackUrl: "/login" }), // Cierra sesión y redirige a /login
     },
-    {
-      name: "Pendientes",
-      href: "/tecnico/pendientes",
-      icon: Clock,
-      badge: "2",
-      current: pathname === "/tecnico/pendientes",
-    },
-    { name: "Mi horario", href: "/tecnico/horario", icon: Calendar, current: pathname === "/tecnico/horario" },
-    { name: "Guías técnicas", href: "/tecnico/guias", icon: HelpCircle, current: pathname === "/tecnico/guias" },
-    {
-      name: "Configuración",
-      href: "/tecnico/configuracion",
-      icon: Settings,
-      current: pathname === "/tecnico/configuracion",
-    },
-    { name: "Cerrar sesión", href: "/logout", icon: LogOut, current: false },
-  ]
+  ];
 
   // Determine current page title for breadcrumb
   const getCurrentPageTitle = () => {
-    const currentNav = navigation.find((item) => item.current)
-    return currentNav ? currentNav.name : "Panel de Técnico"
-  }
+    const currentNav = navigation.find((item) => item.current);
+    return currentNav ? currentNav.name : "Panel de Técnico";
+  };
 
   const Sidebar = () => (
     <div className="flex h-full flex-col bg-white">
       <div className="flex flex-col items-center border-b p-6">
         <div className="relative">
           <Avatar className="h-20 w-20 border-2 border-blue-100 ring-2 ring-blue-600/10">
-            <AvatarImage src="/placeholder.svg?height=80&width=80" alt="Avatar" />
+            <AvatarImage
+              src="/placeholder.svg?height=80&width=80"
+              alt="Avatar"
+            />
             <AvatarFallback className="bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 text-xl font-semibold">
-              CM
+              {session?.user?.user?.slice(0, 2).toUpperCase() || "AA"}
             </AvatarFallback>
           </Avatar>
           <div className="absolute -bottom-1 -right-1 rounded-full bg-green-500 p-1.5 ring-2 ring-white" />
         </div>
         <div className="mt-4 text-center">
-          <h2 className="text-lg font-semibold text-gray-900">Carlos Mendoza</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {session?.user?.user_firstname || "Usuario"}{" "}
+            {session?.user?.user_lastname || "Usuario"}
+          </h2>
           <div className="mt-1 flex items-center justify-center gap-1.5">
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs font-normal">
-              Técnico
+            <Badge
+              variant="outline"
+              className="bg-blue-50 text-blue-700 border-blue-200 text-xs font-normal"
+            >
+              {(() => {
+                switch (session?.user?.id_rol) {
+                  case 1:
+                    return "Usuario";
+                  case 2:
+                    return "Técnico";
+                  case 3:
+                    return "Administrador";
+                  default:
+                    return "N/A";
+                }
+              })()}
             </Badge>
           </div>
-          <p className="mt-1.5 text-sm text-gray-500">cmendoza@ugel05.gob.pe</p>
+          <p className="mt-1.5 text-sm text-gray-500">
+            {session?.user?.email || "correo@ugel05.gob.pe"}
+          </p>
           <p className="text-xs text-gray-400">Soporte Técnico</p>
         </div>
       </div>
@@ -117,23 +152,30 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
           <Link
             key={item.name}
             href={item.href}
+            onClick={item.onClick}
             className={cn(
               "group flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium transition-all",
               item.current
                 ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800"
-                : "text-gray-700 hover:bg-gray-50",
+                : "text-gray-700 hover:bg-gray-50"
             )}
           >
             <div className="flex items-center">
               <item.icon
                 className={cn(
                   "mr-3 h-5 w-5",
-                  item.current ? "text-blue-600" : "text-gray-400 group-hover:text-gray-500",
+                  item.current
+                    ? "text-blue-600"
+                    : "text-gray-400 group-hover:text-gray-500"
                 )}
               />
               {item.name}
             </div>
-            {item.badge && <Badge className="bg-blue-600 hover:bg-blue-700">{item.badge}</Badge>}
+            {item.badge && (
+              <Badge className="bg-blue-600 hover:bg-blue-700">
+                {item.badge}
+              </Badge>
+            )}
           </Link>
         ))}
       </nav>
@@ -146,7 +188,7 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -156,7 +198,11 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
           {isMobile && (
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-blue-700/50">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-blue-700/50"
+                >
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Abrir menú</span>
                 </Button>
@@ -170,13 +216,19 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/10">
               <Wrench className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-white">UGEL05 - PANEL DE TÉCNICO</h1>
+            <h1 className="text-xl font-bold text-white">
+              UGEL05 - PANEL DE TÉCNICO
+            </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-blue-700/50 relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-blue-700/50 relative"
+              >
                 <Bell className="h-5 w-5" />
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs font-bold text-blue-600">
                   4
@@ -191,15 +243,21 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
                 <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
                   <div className="flex w-full justify-between">
                     <span className="font-medium">Nueva asignación</span>
-                    <span className="text-xs text-muted-foreground">Hace 5 min</span>
+                    <span className="text-xs text-muted-foreground">
+                      Hace 5 min
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Se le ha asignado la solicitud #SOL-2024-0042.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Se le ha asignado la solicitud #SOL-2024-0042.
+                  </p>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
                   <div className="flex w-full justify-between">
                     <span className="font-medium">Solicitud urgente</span>
-                    <span className="text-xs text-muted-foreground">Hace 30 min</span>
+                    <span className="text-xs text-muted-foreground">
+                      Hace 30 min
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     La solicitud #SOL-2024-0040 ha sido marcada como urgente.
@@ -209,7 +267,9 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
                 <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
                   <div className="flex w-full justify-between">
                     <span className="font-medium">Recordatorio</span>
-                    <span className="text-xs text-muted-foreground">Hace 1 hora</span>
+                    <span className="text-xs text-muted-foreground">
+                      Hace 1 hora
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     La solicitud #SOL-2024-0038 está pendiente de resolución.
@@ -223,8 +283,13 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
             </DropdownMenuContent>
           </DropdownMenu>
           <Avatar className="h-8 w-8 border border-white/30">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Avatar" />
-            <AvatarFallback className="bg-blue-900 text-white text-xs">CM</AvatarFallback>
+            <AvatarImage
+              src="/placeholder.svg?height=32&width=32"
+              alt="Avatar"
+            />
+            <AvatarFallback className="bg-blue-900 text-white text-xs">
+              CM
+            </AvatarFallback>
           </Avatar>
         </div>
       </header>
@@ -251,7 +316,9 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink className="font-medium">{getCurrentPageTitle()}</BreadcrumbLink>
+                  <BreadcrumbLink className="font-medium">
+                    {getCurrentPageTitle()}
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -260,5 +327,5 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
         </main>
       </div>
     </div>
-  )
+  );
 }

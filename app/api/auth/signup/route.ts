@@ -8,10 +8,10 @@ export async function POST(request: Request) {
   try {
     // 1. Mostrar datos recibidos
     const requestData = await request.json();
-    // console.log("Datos recibidos:", {
-    //   ...requestData,
-    //   password: "******", // Ocultamos la contraseña por seguridad en los logs
-    // });
+    console.log("Datos recibidos:", {
+      ...requestData,
+      password: "******", // Ocultamos la contraseña por seguridad en los logs
+    });
 
     // 2. Convertir id_rol a número si es string
     if (typeof requestData.id_rol === "string") {
@@ -48,28 +48,51 @@ export async function POST(request: Request) {
     }
 
     // 6. Hash de contraseña
-    const hashedPassword = await bcrypt.hash(requestData.password, 15);
+    const hashedPassword = await bcrypt.hash(requestData.password, 12);
 
-    // 7. Crear usuario
+    // 7. Crear usuario en MongoDB
     const newUser = new User({
       ...requestData,
       password: hashedPassword,
       id_rol: Number(requestData.id_rol), // Aseguramos que sea número
     });
 
-    // 8. Guardar usuario
+    // 8. Guardar usuario en MongoDB
     const savedUser = await newUser.save();
-    console.log("Usuario creado");
-    // console.log("Usuario creado:", {
-    //   ...savedUser.toObject(),
-    //   password: "******",
-    // });
+    console.log("Usuario creado en MongoDB:", {
+      ...savedUser.toObject(),
+      password: "******",
+    });
 
-    return NextResponse.json(savedUser);
+    // 9. Preparar datos para MySQL
+    const mysqlUserData = {
+      alf_num: requestData.alf_num,
+      dni: requestData.dni,
+      email: requestData.email,
+      id_rol: Number(requestData.id_rol),
+      celular: requestData.telefono,
+      nombres: requestData.user_firstname,
+      apellidos: requestData.user_lastname,
+      activo: true,
+    };
+
+    console.log("Datos preparados para MySQL:", mysqlUserData);
+
+    // 10. Enviar a MySQL
+    const mysqlResult = await sendUserToMySQL(mysqlUserData);
+    console.log("Resultado de MySQL:", mysqlResult);
+
+    return NextResponse.json({
+      mongoUser: savedUser,
+      mysqlResult: mysqlResult,
+    });
   } catch (error) {
     console.error("Error completo:", error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Error desconocido" },
+      {
+        message: error instanceof Error ? error.message : "Error desconocido",
+        errorDetails: error instanceof Error ? error.stack : null,
+      },
       { status: 400 }
     );
   }
