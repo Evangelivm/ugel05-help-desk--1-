@@ -1,7 +1,7 @@
 // app/page.tsx
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import { HelpDeskLayout } from "@/components/help-desk-layout";
 import { DashboardContainer } from "@/components/dashboard-container";
 

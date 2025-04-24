@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminTechniciansList } from "@/components/admin-technicians-list";
-import { AdminTechnicianPerformance } from "@/components/admin-technician-performance";
+// import { AdminTechnicianPerformance } from "@/components/admin-technician-performance";
 import { Download, Plus } from "lucide-react";
 
 export default function AdminTechniciansPage() {
@@ -65,9 +65,7 @@ export default function AdminTechniciansPage() {
                   Análisis de rendimiento y productividad del equipo técnico.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <AdminTechnicianPerformance />
-              </CardContent>
+              <CardContent>{/* <AdminTechnicianPerformance /> */}</CardContent>
             </Card>
           </TabsContent>
         </Tabs>
