@@ -86,6 +86,38 @@ interface Technician {
   num_tickets: number;
 }
 
+interface TechnicianTicket {
+  id_ticket: number;
+  id: string; // codigo_consulta
+  user: string; // nombre completo del usuario
+  type: string; // tipo de soporte
+  description: string;
+  status: number; // id_estado_ticket
+  fecha_creacion: string;
+  fecha_cierre: string | null;
+  celular: string;
+  cantidad_horas_atencion: number;
+}
+
+interface TicketMetricsResponse {
+  ticketsByStatus: {
+    abiertos: number;
+    enProceso: number;
+    pendientes: number;
+    resueltos: number;
+  };
+  tiempoPromedio: {
+    current: number;
+    difference: number;
+    percentage: number;
+    isImprovement: boolean;
+  };
+  totals: {
+    currentMonth: number;
+    previousMonth: number;
+  };
+}
+
 // Función para obtener los tipos de soporte disponibles
 export const getSupportTypes = async (): Promise<SupportType[]> => {
   try {
@@ -411,7 +443,7 @@ export const closeTicket = async (
     }
 
     const fecha_cierre = getLocalISOString();
-    console.log(fecha_cierre);
+    //console.log(fecha_cierre);
 
     const response = await axios.patch(
       `${BASE_URL}/admin/close/`,
@@ -447,5 +479,78 @@ export const closeTicket = async (
     }
 
     throw new Error("Error al intentar cerrar el ticket");
+  }
+};
+
+export const getTechnicianTickets = async (
+  technicianId: string
+): Promise<TechnicianTicket[]> => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/tickets/technician/${technicianId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener los tickets del técnico:", error);
+
+    if (axios.isAxiosError(error)) {
+      console.error("Status:", error.response?.status);
+      console.error("Mensaje:", error.response?.data);
+
+      if (error.response?.status === 404) {
+        throw new Error("Técnico no encontrado o no tiene tickets asignados");
+      }
+    }
+
+    // Retornar array vacío en caso de error
+    return [];
+  }
+};
+
+// Función para obtener métricas de un técnico específico
+export const getTechnicianMetrics = async (
+  technicianId: string
+): Promise<TicketMetricsResponse> => {
+  try {
+    const response = await axios.get<TicketMetricsResponse>(
+      `${BASE_URL}/tickets/techmetrics/${technicianId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error al obtener métricas del técnico ${technicianId}:`,
+      error
+    );
+
+    if (axios.isAxiosError(error)) {
+      console.error("Status:", error.response?.status);
+      console.error("Mensaje:", error.response?.data);
+
+      if (error.response?.status === 404) {
+        throw new Error(`Técnico con ID ${technicianId} no encontrado`);
+      } else if (error.response?.status === 400) {
+        throw new Error("Datos inválidos para la consulta de métricas");
+      }
+    }
+
+    // Retorno de valores por defecto en caso de error
+    return {
+      ticketsByStatus: {
+        abiertos: 0,
+        enProceso: 0,
+        pendientes: 0,
+        resueltos: 0,
+      },
+      tiempoPromedio: {
+        current: 0,
+        difference: 0,
+        percentage: 0,
+        isImprovement: false,
+      },
+      totals: {
+        currentMonth: 0,
+        previousMonth: 0,
+      },
+    };
   }
 };
