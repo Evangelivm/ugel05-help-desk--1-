@@ -22,8 +22,8 @@ interface TicketMetricsResponse {
     resueltos: number;
   };
   tiempoPromedio: {
-    current: number;
-    difference: number;
+    current: number | null;
+    difference: number | null;
     percentage: number;
     isImprovement: boolean;
   };
@@ -97,25 +97,6 @@ interface TechnicianTicket {
   fecha_cierre: string | null;
   celular: string;
   cantidad_horas_atencion: number;
-}
-
-interface TicketMetricsResponse {
-  ticketsByStatus: {
-    abiertos: number;
-    enProceso: number;
-    pendientes: number;
-    resueltos: number;
-  };
-  tiempoPromedio: {
-    current: number;
-    difference: number;
-    percentage: number;
-    isImprovement: boolean;
-  };
-  totals: {
-    currentMonth: number;
-    previousMonth: number;
-  };
 }
 
 // Función para obtener los tipos de soporte disponibles
