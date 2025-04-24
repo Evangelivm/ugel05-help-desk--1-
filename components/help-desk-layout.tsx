@@ -54,7 +54,7 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
       name: "Mis solicitudes",
       href: "/",
       icon: FileText,
-      badge: "3",
+      // badge: "3",
       current: pathname === "/",
     },
     {
@@ -159,11 +159,11 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
               />
               {item.name}
             </div>
-            {item.badge && (
+            {/* {item.badge && (
               <Badge className="bg-red-600 hover:bg-red-700">
                 {item.badge}
               </Badge>
-            )}
+            )} */}
           </Link>
         ))}
       </nav>
@@ -212,7 +212,7 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="icon"
                 className="text-white hover:bg-red-700/50 relative"
@@ -222,7 +222,7 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
                   3
                 </span>
                 <span className="sr-only">Notificaciones</span>
-              </Button>
+              </Button> */}
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80" align="end">
               <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
@@ -273,7 +273,7 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Avatar className="h-8 w-8 border border-white/30">
+          {/* <Avatar className="h-8 w-8 border border-white/30">
             <AvatarImage
               src="/placeholder.svg?height=32&width=32"
               alt="Avatar"
@@ -281,7 +281,7 @@ export function HelpDeskLayout({ children }: HelpDeskLayoutProps) {
             <AvatarFallback className="bg-red-800 text-white text-xs">
               AA
             </AvatarFallback>
-          </Avatar>
+          </Avatar> */}
         </div>
       </header>
 

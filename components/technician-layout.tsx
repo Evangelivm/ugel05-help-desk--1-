@@ -63,7 +63,7 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
       name: "Mis asignaciones",
       href: "/tecnico/asignaciones",
       icon: FileText,
-      badge: "4",
+      // badge: "4",
       current: pathname === "/tecnico/asignaciones",
     },
     // {
@@ -171,11 +171,11 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
               />
               {item.name}
             </div>
-            {item.badge && (
+            {/* {item.badge && (
               <Badge className="bg-blue-600 hover:bg-blue-700">
                 {item.badge}
               </Badge>
-            )}
+            )} */}
           </Link>
         ))}
       </nav>
@@ -224,7 +224,7 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="icon"
                 className="text-white hover:bg-blue-700/50 relative"
@@ -234,7 +234,7 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
                   4
                 </span>
                 <span className="sr-only">Notificaciones</span>
-              </Button>
+              </Button> */}
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80" align="end">
               <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
@@ -282,7 +282,7 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Avatar className="h-8 w-8 border border-white/30">
+          {/* <Avatar className="h-8 w-8 border border-white/30">
             <AvatarImage
               src="/placeholder.svg?height=32&width=32"
               alt="Avatar"
@@ -290,7 +290,7 @@ export function TechnicianLayout({ children }: TechnicianLayoutProps) {
             <AvatarFallback className="bg-blue-900 text-white text-xs">
               CM
             </AvatarFallback>
-          </Avatar>
+          </Avatar> */}
         </div>
       </header>
 
