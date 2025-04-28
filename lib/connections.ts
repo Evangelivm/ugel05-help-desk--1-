@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000"; // Reemplaza con la URL de tu backend
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001";
 
 interface TicketData {
   alf_num_usuario: string;
